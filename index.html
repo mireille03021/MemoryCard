@@ -50,7 +50,7 @@
                 createPlayground();
                 playingCards = 12;
             }
-
+            init();
             function createPlayground(){
                 $playground.empty();
 
@@ -79,10 +79,12 @@
             
             $("#start").click(function () {
                 alert("開始!");
+                $(".poker").addClass('open-card');
                 init();
                 setDeck();
                 setCards();
                 shuffle(cards);
+                $(".poker").removeClass('open-card');
             });
 
             function setDeck() {
@@ -140,8 +142,6 @@
                     array[random] = tmp;
                 }
             }
-
-            init();
 
             var click = 0;
             var selectCards = new Array(2);
