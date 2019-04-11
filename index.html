@@ -6,16 +6,199 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="stylesheets/stylesheet.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <title>記憶遊戲</title>
 </head>
 
 <body>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <h1 class="text-center">記憶遊戲</h1>
+    <div id="game">
+        <div id="playground">
+            <!-- <table>
+                <tr>
+                    <td>
+                        <div class="poker close-card" aria-valuenow="0"></div>
+                    </td>
+                    <td>
+                        <div class="poker active-card" aria-valuenow="1"></div>
+                    </td>
+                    <td>
+                        <div class="poker close-card" aria-valuenow="2"></div>
+                    </td>
+                    <td>
+                        <div class="poker active-card" aria-valuenow="3"></div>
+                    </td>
+                </tr>
+            </table> -->
+        </div>
+    </div>
+    <button type="button" class="btn btn-dark" id="start">開始</button>
     <script src="jquery-3.3.1.js"></script>
-    <script></script>
+    <script>
+        $(function () {
+            var deck = new Array(52);
+            var size = 12;
+            var playingCards = size;
+            var cards = new Array();
+
+            var $playground = $("#playground");
+            
+            function init() {
+                cards = new Array();
+                deck = new Array(52);
+                createPlayground();
+                playingCards = 12;
+            }
+
+            function createPlayground(){
+                $playground.empty();
+
+                var $table = $("<table></table>");
+                var count = 0;
+                for (var i = 0; i < 3; i++) {
+                    var $tr = $("<tr></tr>");
+                    for (var j = 0; j < 4; j++) {
+                        var $td = $("<td></td>");
+                        $td.appendTo($tr);
+                        var $div = $("<div></div>")
+                            .addClass("poker")
+                            .addClass("close-card")
+                            .attr('aria-valuenow',count++)
+                            .appendTo($td);
+                    }
+                    $tr.appendTo($table);
+                }
+
+                $table.appendTo($playground)
+                    .css({
+                        'marginTop': -1 * ($table.outerHeight() / 1.5),
+                        'marginLeft': -1 * ($table.outerWidth() / 2)
+                    });
+            }
+            
+            $("#start").click(function () {
+                alert("開始!");
+                init();
+                setDeck();
+                setCards();
+                shuffle(cards);
+            });
+
+            function setDeck() {
+                for (var i = 0; i < 52; i++) {
+                    var flower = "";
+                    if (0 <= i && i < 13) {
+                        flower = "club";
+                    } else if (12 < i && i < 26) {
+                        flower = "diamond";
+                    } else if (25 < i && i < 39) {
+                        flower = "heart";
+                    } else {
+                        flower = "spade";
+                    }
+                    deck[i] = {
+                        'url': "/images/" + (i + 1) + ".png", //因為圖片是從1開始
+                        'point': (i % 13) + 1,
+                        'flower': flower
+                    }
+                }
+            }
+
+            function setCards() {
+                for (var i = 0; i < size / 2; i++) {
+                    pickPairCards();
+                }
+                $(".poker").on('click', clickCard);
+            }
+
+            function pickOneCard() {
+                var randomPick = Math.floor(Math.random() * deck.length) + 1;
+                var card = deck[randomPick];
+                deck.splice(randomPick, 1);
+                return card;
+            }
+
+            function pickPairCards() {
+                var card = pickOneCard();
+                for (var i = 1; i < deck.length; i++) {
+                    if (deck[i].point == card.point) {
+                        cards.push(card);
+                        cards.push(deck[i]);
+                        deck.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+
+            function shuffle(array) {
+                for (var i = 0; i < array.length; i++) {
+                    var random = Math.floor(Math.random() * array.length);
+                    var tmp = array[0];
+                    array[0] = array[random];
+                    array[random] = tmp;
+                }
+            }
+
+            init();
+
+            var click = 0;
+            var selectCards = new Array(2);
+            var $selectElements = new Array(2);
+
+            function clickCard() {
+                var $this = $(this);
+                var value = $this.attr('aria-valuenow');
+                $selectElements[click] = $this;   //因為我不是在建立版面時附加上background-image，而是用對應陣列的方式來顯示圖片
+                selectCards[click] = cards[value]; //所以會有兩種陣列，這種方式比較麻煩且沒必要，建議在建立table的時候直接綁定圖片上去即可
+                $this.off('click');
+
+                $this.css('background-image', 'url(' + cards[value].url + ')');
+                if (click < 2) {
+                    $this.removeClass('close-card').addClass('open-card');
+                    click++;
+                }
+                if (click > 1) {
+                    checkPair(selectCards, $selectElements);
+                    click = 0;
+                }
+            }
+
+            function checkPair(selectCards, $selectElements) {
+                $(".poker").off('click');
+                if (selectCards[0].point == selectCards[1].point) {
+                    setTimeout(function () {
+                        $selectElements[0].css('visibility','hidden').attr('disabled', 'disabled');
+                        $selectElements[1].css('visibility','hidden').attr('disabled', 'disabled');
+                        $(".poker").on('click', clickCard);
+                        endGame();
+                    }, 1000)
+                }
+                else {
+                    setTimeout(function () {
+                        $selectElements[0]
+                            .removeAttr('style')
+                            .removeClass('open-card')
+                            .addClass('close-card');
+                        $selectElements[1]
+                            .removeAttr('style')
+                            .removeClass('open-card')
+                            .addClass('close-card');
+                            $(".poker").on('click', clickCard);
+                    }, 1000)
+                }
+            }
+
+            function endGame(){
+                playingCards-=2;
+                console.log(playingCards);
+                if(playingCards == 0){
+                    alert("結束");
+                }
+            }
+            endGame();
+        });
+    </script>
 </body>
 
 </html>
