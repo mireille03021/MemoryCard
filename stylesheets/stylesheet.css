@@ -31,16 +31,16 @@
 .poker.close-card {
   background-image: url("/images/0.png");
   background-repeat: no-repeat;
-  -webkit-transform: rotateY(180deg);
-          transform: rotateY(180deg);
+  -webkit-transform: rotate3d(0, 1, 0, 180deg);
+          transform: rotate3d(0, 1, 0, 180deg);
   -webkit-transition: all 300ms;
   transition: all 300ms;
 }
 
 .poker.open-card {
   background-repeat: no-repeat;
-  -webkit-transform: rotateY(360deg);
-          transform: rotateY(360deg);
+  -webkit-transform: rotate3d(0, 1, 0, 360deg);
+          transform: rotate3d(0, 1, 0, 360deg);
   -webkit-transition: all 300ms;
   transition: all 300ms;
 }
