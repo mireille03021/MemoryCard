@@ -101,7 +101,7 @@
                 cards = new Array();
                 deck = new Array(52);
                 createPlayground();
-                playingCards = 12;
+                playingCards = size;
             }
             init();
             function createPlayground() {
@@ -169,7 +169,6 @@
 
             function pickOneCard() {
                 var randomPick = Math.floor(Math.random() * (deck.length - 1)) + 1;
-                console.log(randomPick);
                 var card = deck[randomPick];
                 deck.splice(randomPick, 1);
                 return card;
@@ -194,7 +193,6 @@
                     array[0] = array[random];
                     array[random] = tmp;
                 }
-                console.log(cards);
             }
 
             var click = 0;
@@ -204,8 +202,8 @@
             function clickCard() {
                 var $this = $(this);
                 var value = $this.attr('aria-valuenow');
-                $selectElements[click] = $this;   //因為我不是在建立版面時附加上background-image，而是用對應陣列的方式來顯示圖片
-                selectCards[click] = cards[value]; //所以會有兩種陣列，這種方式比較麻煩且沒必要，建議在建立table的時候直接綁定圖片上去即可
+                $selectElements[click] = $this;   //因為我沒有用id來對應按鈕，所以需要額外陣列來記住是哪個按鈕
+                selectCards[click] = cards[value];
                 $this.off('click');
 
                 $this.css('background-image', 'url(' + cards[value].url + ')');
@@ -223,8 +221,8 @@
                 $(".poker").off('click');
                 if (selectCards[0].point == selectCards[1].point) {
                     setTimeout(function () {
-                        $selectElements[0].css('visibility', 'hidden').attr('disabled', 'disabled');
-                        $selectElements[1].css('visibility', 'hidden').attr('disabled', 'disabled');
+                        $selectElements[0].css('visibility', 'hidden');
+                        $selectElements[1].css('visibility', 'hidden');
                         $(".poker").on('click', clickCard);
                         endGame();
                     }, 1000)
@@ -251,7 +249,6 @@
                     alert("結束");
                 }
             }
-            endGame();
         });
     </script>
 </body>
